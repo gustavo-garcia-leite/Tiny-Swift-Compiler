@@ -10,5 +10,9 @@ void match(char c);
 char getName();
 char getNum();
 void emit(char *fmt, ...);
+void term();
+void expression();
+void add();
+void subtract();
 
 #endif

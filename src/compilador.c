@@ -112,3 +112,49 @@ void emit(char *fmt, ...)
 
     putchar('\n');
 }
+
+/* Captura um termo */
+void term()
+{
+        emit("MOV AX, %c", getNum());
+}
+
+/* Utiliza os termos para formar uma expressão, 
+    o loop permite diferentes tamanhos de expressão */
+void expression()
+{
+        term();
+        while (look == '+' || look == '-') {
+                emit("PUSH AX");
+                switch(look) {
+                  case '+':
+                        add();
+                        break;
+                  case '-':
+                        subtract();
+                        break;
+                  default:
+                        expected("AddOp");
+                        break;
+                }
+        }
+}
+
+/* Expressão para adição */
+void add()
+{
+        match('+');
+        term();
+        emit("POP BX");
+        emit("ADD AX, BX");
+}
+
+/* Expressão para subtração */
+void subtract()
+{
+        match('-');
+        term();
+        emit("POP BX");
+        emit("SUB AX, BX");
+        emit("NEG AX");
+}
