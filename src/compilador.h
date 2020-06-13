@@ -1,6 +1,9 @@
 #ifndef __COMPILADOR_H__
 #define __COMPILADOR_H__
 
+/* variáveis */
+char look; /* O caracter lido "antecipadamente" (lookahead) */
+
 void add();
 void assignment();
 void divide();
