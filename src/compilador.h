@@ -10,9 +10,13 @@ void match(char c);
 char getName();
 char getNum();
 void emit(char *fmt, ...);
+void factor();
 void term();
 void expression();
 void add();
 void subtract();
+void multiply();
+void divide();
+int isAddOp(char c);
 
 #endif
