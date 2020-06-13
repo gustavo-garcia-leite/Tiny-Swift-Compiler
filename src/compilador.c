@@ -116,100 +116,100 @@ void emit(char *fmt, ...)
 /* reconhece operador aditivo */
 int isAddOp(char c)
 {
-        return (c == '+' || c == '-');
+    return (c == '+' || c == '-');
 }
 
 /* analisa e traduz um fator matemático */
 void factor()
 {
-        if (look == '(') {
-                match('(');
-                expression();
-                match(')');
-        } else
-                emit("MOV AX, %c", getNum());
+    if (look == '(') {
+            match('(');
+            expression();
+            match(')');
+    } else
+            emit("MOV AX, %c", getNum());
 }
 
 
 /* analisa e traduz um fator termo */
 void term()
 {
-        factor();
-        while (look == '*' || look == '/') {
-                emit("PUSH AX");
-                switch(look) {
-                  case '*':
-                        multiply();
-                        break;
-                  case '/':
-                        divide();
-                        break;
-                  default:
-                        expected("MulOp");
-                        break;
-                }
+    factor();
+    while (look == '*' || look == '/') {
+        emit("PUSH AX");
+        switch(look) {
+            case '*':
+                multiply();
+                break;
+            case '/':
+                divide();
+                break;
+            default:
+                expected("MulOp");
+                break;
         }
+    }
 }
 
 /* Utiliza os termos para formar uma expressão, 
     o loop permite diferentes tamanhos de expressão */
 void expression()
 {
-        if (isAddOp(look))
-                emit("XOR AX, AX");
-        else
-                term();
-        while (look == '+' || look == '-') {
-                emit("PUSH AX");
-                switch(look) {
-                  case '+':
-                        add();
-                        break;
-                  case '-':
-                        subtract();
-                        break;
-                  default:
-                        expected("AddOp");
-                        break;
-                }
+    if (isAddOp(look))
+        emit("XOR AX, AX");
+    else
+        term();
+    while (look == '+' || look == '-') {
+        emit("PUSH AX");
+        switch(look) {
+            case '+':
+                add();
+                break;
+            case '-':
+                subtract();
+                break;
+            default:
+                expected("AddOp");
+                break;
         }
+    }
 }
 
 /* Expressão para adição */
 void add()
 {
-        match('+');
-        term();
-        emit("POP BX");
-        emit("ADD AX, BX");
+    match('+');
+    term();
+    emit("POP BX");
+    emit("ADD AX, BX");
 }
 
 /* Expressão para subtração */
 void subtract()
 {
-        match('-');
-        term();
-        emit("POP BX");
-        emit("SUB AX, BX");
-        emit("NEG AX");
+    match('-');
+    term();
+    emit("POP BX");
+    emit("SUB AX, BX");
+    emit("NEG AX");
 }
 
 /* reconhece e traduz uma multiplicação */
 void multiply()
 {
-        match('*');
-        factor();
-        emit("POP BX");
-        emit("IMUL BX");
+    match('*');
+    factor();
+    emit("POP BX");
+    emit("IMUL BX");
 }
 
 /* reconhece e traduz uma divisão */
 void divide()
 {
-        match('/');
-        factor();
-        emit("POP BX");
-        emit("XCHG AX, BX");
-        emit("CWD");
-        emit("IDIV BX");
+    match('/');
+    factor();
+    emit("POP BX");
+    emit("XCHG AX, BX");
+    emit("CWD");
+    emit("IDIV BX");
 }

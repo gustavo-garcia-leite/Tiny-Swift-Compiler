@@ -1,22 +1,23 @@
 #ifndef __COMPILADOR_H__
 #define __COMPILADOR_H__
 
-void init();
-void nextChar();
+void add();
+void divide();
 void error(char *fmt, ...);
-void fatal(char *fmt, ...);
+void emit(char *fmt, ...);
 void expected(char *fmt, ...);
-void match(char c);
+void expression();
+void factor();
+void fatal(char *fmt, ...);
 char getName();
 char getNum();
-void emit(char *fmt, ...);
-void factor();
-void term();
-void expression();
-void add();
-void subtract();
-void multiply();
-void divide();
+void init();
 int isAddOp(char c);
+void match(char c);
+void multiply();
+void nextChar();
+void subtract();
+void term();
+
 
 #endif
