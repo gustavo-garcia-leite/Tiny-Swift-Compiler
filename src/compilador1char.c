@@ -4,9 +4,6 @@
 #include <ctype.h>
 #include "compilador.h"
 
-#define MAXNAME 30
-#define MAXNUM 5
-
 /* variáveis */
 char look; /* O caracter lido "antecipadamente" (lookahead) */
 
@@ -77,37 +74,29 @@ void match(char c)
 }
 
 /* recebe o nome de um identificador */
-
-void getName(char *name)
+char getName()
 {
-    int i;
+    char name;
+
     if (!isalpha(look))
         expected("Name");
-    for (i = 0; isalnum(look); i++)
-    {
-        if (i >= MAXNAME)
-            fatal("Identifier too long!");
-        name[i] = toupper(look);
-        nextChar();
-    }
-    name[i] = '\0';
+    name = toupper(look);
+    nextChar();
+
+    return name;
 }
 
-/* recebe um número inteiro */
-
-void getNum(char *num)
+/* recebe um numero inteiro */
+char getNum()
 {
-    int i;
+    char num;
+
     if (!isdigit(look))
         expected("Integer");
-    for (i = 0; isdigit(look); i++)
-    {
-        if (i >= MAXNUM)
-            fatal("Integer too long!");
-        num[i] = look;
-        nextChar();
-    }
-    num[i] = '\0';
+    num = look;
+    nextChar();
+
+    return num;
 }
 
 /* emite uma instrucao seguida por uma nova linha */
@@ -133,22 +122,23 @@ int isAddOp(char c)
 /* analisa e traduz um identificador */
 void ident()
 {
-    char name[MAXNAME + 1];
-    getName(name);
+    char name;
+    name = getName();
+
     if (look == '(')
     {
         match('(');
         match(')');
-        emit("CALL %s", name);
+        emit("CALL %c", name);
     }
     else
-        emit("MOV AX, [%s]", name);
+        emit("MOV AX, [%c]", name);
 }
 
 /* analisa e traduz um fator matemático */
 void factor()
 {
-    char num[MAXNUM + 1];
+
     if (look == '(')
     {
         match('(');
@@ -156,14 +146,9 @@ void factor()
         match(')');
     }
     else if (isalpha(look))
-    {
         ident();
-    }
     else
-    {
-        getNum(num);
-        emit("MOV AX, %s", num);
-    }
+        emit("MOV AX, %c", getNum());
 }
 
 /* analisa e traduz um fator termo */
@@ -218,11 +203,11 @@ void expression()
 
 void assignment()
 {
-    char name[MAXNAME + 1];
-    getName(name);
+    char name;
+    name = getName();
     match('=');
     expression();
-    emit("MOV [%s], AX", name);
+    emit("MOV [%c], AX", name);
 }
 
 /* Expressão para adição */
