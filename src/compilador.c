@@ -14,6 +14,7 @@ char look; /* O caracter lido "antecipadamente" (lookahead) */
 void init()
 {
     nextChar();
+    skipWhite();
 }
 
 /* lê o próximo caracter da entrada */
@@ -74,6 +75,7 @@ void match(char c)
     if (look != c)
         expected("'%c'", c);
     nextChar();
+    skipWhite();
 }
 
 /* recebe o nome de um identificador */
@@ -91,6 +93,7 @@ void getName(char *name)
         nextChar();
     }
     name[i] = '\0';
+    skipWhite();
 }
 
 /* recebe um número inteiro */
@@ -108,6 +111,7 @@ void getNum(char *num)
         nextChar();
     }
     num[i] = '\0';
+    skipWhite();
 }
 
 /* emite uma instrucao seguida por uma nova linha */
@@ -215,7 +219,6 @@ void expression()
 }
 
 /* analisa e traduz um comando de atribuição */
-
 void assignment()
 {
     char name[MAXNAME + 1];
@@ -223,6 +226,13 @@ void assignment()
     match('=');
     expression();
     emit("MOV [%s], AX", name);
+}
+
+/* pula caracteres de espaço */
+void skipWhite()
+{
+    while (look == ' ' || look == '\t')
+        nextChar();
 }
 
 /* Expressão para adição */

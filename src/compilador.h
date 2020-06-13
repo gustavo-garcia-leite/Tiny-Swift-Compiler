@@ -15,7 +15,7 @@ void getNum(char *num);
 void ident();
 void init();
 int isAddOp(char c);
-void match(char c);
+void skipWhite();
 void multiply();
 void nextChar();
 void subtract();
