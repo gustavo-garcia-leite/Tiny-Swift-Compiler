@@ -1,2 +1,2 @@
 all:
-	gcc main.c -o exec && ./exec
+	gcc interpretador.c -o exec && ./exec
