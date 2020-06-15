@@ -4,17 +4,16 @@
 #include <ctype.h>
 #include <string.h>
 #include "compilador-TinySwift.h"
-#define LIST_SZ 11
 
-char *commandList[LIST_SZ] = {"IF", "ELSE", "ENDIF", "WHILE", "ENDWHILE", "READ", "WRITE", "VAR", "{", "}", "PROGRAM"};
-char commandCode[LIST_SZ + 1] = "ileweRWv{}p"; /* lista de palavras-chave */
-int nsym;                                      /* número de entradas na tabela de símbolos */
+char *commandList[LIST_SZ] = {"IF", "ELSE", "ENDIF", "WHILE", "ENDWHILE", "READ", "WRITE", "VAR", "BEGIN", "END", "PROGRAM"};
+char *commandCode = "ileweRWvbep"; /* lista de palavras-chave */
+int nsym;                          /* número de entradas na tabela de símbolos */
 
 /* inicializacao do compilador */
 void init()
 {
     nsym = 0;
-    nextchar();
+    nextChar();
     scan();
 }
 
@@ -27,15 +26,7 @@ void nextChar()
 /* exibe uma mensagem de erro formatada */
 void error(char *fmt, ...)
 {
-    va_list args;
-
-    fputs("Error: ", stderr);
-
-    va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
-
-    fputc('\n', stderr);
+    fprintf(stderr, "error: %s \n", fmt);
 }
 
 /* exibe uma mensagem de erro formatada e sai */
@@ -57,27 +48,23 @@ void fatal(char *fmt, ...)
 /* alerta sobre alguma entrada esperada */
 void expected(char *fmt, ...)
 {
-    va_list args;
-
-    fputs("Error: ", stderr);
-
-    va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
-
-    fputs(" expected\n", stderr);
-    printf(", not %c\n", nextToken);
-
+    fprintf(stderr, "Error: %s expected\n", fmt);
     exit(1);
 }
 
 /* verifica se entrada combina com o esperado */
 void match(char c)
 {
+    char s[2];
     newline();
-    if (nextToken != c)
-        expected("'%c'", c);
-    nextChar();
+    if (nextToken == c)
+        nextChar();
+    else
+    {
+        s[0] = c;    /* uma conversao rápida (e feia) */
+        s[1] = '\0'; /* de um caracter em string */
+        expected(s);
+    }
     skipWhite();
 }
 
@@ -99,7 +86,7 @@ void getName()
 }
 
 /* recebe um número inteiro */
-char getNum()
+int getNum()
 {
     newline();
     int i = 0;
@@ -139,9 +126,9 @@ void prog()
 /* emite o código inicial necessário para o montador */
 void header()
 {
-    printf("\t.model small\n");
-    printf("\t.stack\n");
-    printf("\t.code\n");
+    printf(".model small\n");
+    printf(".stack\n");
+    printf(".code\n");
     printf("extrn READ:near, WRITE:near\n");
     printf("PROG segment byte public\n");
     printf("\tassume cs:PROG,ds:PROG,es:PROG,ss:PROG\n");
@@ -166,16 +153,15 @@ void epilog()
 /* Aqui rodará a parte de "código" realmente */
 void mainblock()
 {
-    matchstring("{");
+    matchstring("BEGIN");
     prolog();
     block();
-    matchstring("}");
+    matchstring("END");
     epilog();
 }
 
 void declareVariable()
 {
-    newline();
     for (;;)
     {
         getName();
@@ -184,14 +170,13 @@ void declareVariable()
         if (nextToken != ',')
             break;
         match(',');
-        newline();
     }
 }
 
 void declareVariables()
 {
     scan();
-    while (token != '{')
+    while (token != 'b')
     {
         switch (token)
         {
@@ -200,7 +185,7 @@ void declareVariables()
             break;
         default:
             error("Unrecognized keyword.");
-            expected("{");
+            expected("BEGIN");
             break;
         }
         scan();
@@ -221,16 +206,16 @@ void allocVar(char *name)
             match('-');
             signal = -1;
         }
-        value = signal * getnum();
+        value = signal * getNum();
     }
     printf("%s:\tdw %d\n", name, value);
 }
 
 int intable(char *name)
 {
-    if (lookup(name, symbolStorage, nsym) > 0)
-        return 1;
-    return 0;
+    if (lookup(name, symbolStorage, nsym) < 0)
+        return 0;
+    return 1;
 }
 
 /* analisa e traduz um comando de atribuição */
@@ -263,7 +248,7 @@ void block()
         case 'W':
             dowrite();
             break;
-        case '}':
+        case 'e':
         case 'l':
             follow = 1;
             break;
@@ -358,19 +343,22 @@ void asm_store(char *name)
 {
     if (!intable(name))
         undefined(name);
-    printf("\tmov word ptr bx, ax\n");
+    printf("\tmov word ptr %s, ax\n", name);
 }
 
 /* avisa a respeito de um identificador desconhecido */
 
 void undefined(char *name)
 {
+    int i;
     fprintf(stderr, "Error: Undefined identifier %s\n", name);
+    fprintf(stderr, "Symbol table:\n");
+    for (i = 0; i < nsym; i++)
+        fprintf(stderr, "%d: %s\n", i, symbolStorage[i]);
     exit(1);
 }
 
 /* analisa e traduz um fator matemático */
-
 void factor()
 {
     newline();
@@ -607,17 +595,13 @@ void asm_relop(char op)
 
 /* desvio incondicional */
 void asm_jmp(int label)
-
 {
-
     printf("\tjmp L%d\n", label);
 }
 
 /* desvio se falso (0) */
 void asm_jmpfalse(int label)
-
 {
-
     printf("\tjz L%d\n", label);
 }
 
@@ -733,6 +717,7 @@ void boolexpression()
     }
 }
 
+/* analiza e traduz um comando IF-ELSE-ENDIF */
 void doif()
 {
     int l1, l2;
@@ -752,6 +737,7 @@ void doif()
     matchstring("ENDIF");
 }
 
+/* analiza e traduz um comando WHILE-ENDWHILE */
 void dowhile()
 {
     int l1, l2;
@@ -809,6 +795,7 @@ void addsymbol(char *name)
     newsym = (char *)malloc(sizeof(char) * (strlen(name) + 1));
     if (newsym == NULL)
         fatal("Out of memory!");
+    strcpy(newsym, name);
     symbolStorage[nsym++] = newsym;
 }
 
@@ -817,7 +804,7 @@ void doread()
     match('(');
     for (;;)
     {
-        getname();
+        getName();
         asm_read();
         newline();
         if (nextToken != ',')

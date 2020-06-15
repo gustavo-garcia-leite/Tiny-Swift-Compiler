@@ -1,2 +1,2 @@
 all:
-	gcc main.c compilador-tiny.c -o exec && ./exec
+	gcc main.c compilador-TinySwift.c -o exec && ./exec

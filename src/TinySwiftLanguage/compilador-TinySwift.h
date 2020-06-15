@@ -2,10 +2,11 @@
 #define __COMPILADOR_H__
 #define STORAGE_SIZE 1000
 #define MAXTOKEN 16
+#define LIST_SZ 11
 
 char token;               /* código do token atual */
 char value[MAXTOKEN + 1]; /* texto do token atual */
-char symbolStorage[STORAGE_SIZE];
+char *symbolStorage[STORAGE_SIZE];
 char nextToken; /* O caracter lido "antecipadamente" (lookahead) */
 int labelCount;
 
@@ -19,7 +20,7 @@ void fatal(char *fmt, ...);
 void expected(char *fmt, ...);
 void match(char c);
 void getName();
-char getNum();
+int getNum();
 void emit(char *fmt, ...);
 
 /* Process Steps */
@@ -60,6 +61,8 @@ void asm_popcompare();
 void asm_relop(char op);
 void asm_jmp(int label);
 void asm_jmpfalse(int label);
+void asm_read();
+void asm_write();
 
 /* Operacoes */
 void factor();
