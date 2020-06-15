@@ -2,11 +2,14 @@
 Projeto final da matéria de compiladores - BCC Sétimo semestre
 
 Formalismo de Backus-Naur
+```sh
 <program> ::= p <top-level decl> <main> 
 <main> ::= { <block> }
 <block> ::= ( <statement> )*
 <statement> ::= <if> | <while> | <assignment>
+```
 
+```sh
 //<assignment> ::= <ident> '=' <expression>
 <expression> ::= <first term> ( <addop> <term> )*
 <first term> ::= <first factor> <rest>
@@ -14,13 +17,18 @@ Formalismo de Backus-Naur
 <rest> ::= ( <mulop> <factor> )*
 <first factor> ::= [ <addop> ] <factor>
  <factor> ::= <var> | <number> | ( <expression> )
+ ```
 
-/* Boolean Expressions */
+Boolean Expressions
+```sh
 <bool-expr> ::= <bool-term> ( <orop> <bool-term> )*
 <bool-term> ::= <not-factor> ( <andop> <not-factor> )*
 <not-factor> ::= [ '!' ] <relation>                
 <relation> ::= <expression> [ <relop> <expression> ]
+```
 
-/* Construções de Controle */
+Construções de Controle
+```sh
 <if> ::= IF <bool-expression> <block> [ ELSE <block> ] ENDIF
 <while> ::= WHILE <bool-expression> <block> ENDWHILE
+```
