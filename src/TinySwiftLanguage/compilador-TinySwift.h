@@ -38,8 +38,6 @@ void declareVariable();
 void allocVar(char *name);
 int intable(char *name);
 void undefined(char *name);
-void skipWhite();
-void newline();
 void addsymbol(char *name);
 
 /* Rotinas de geracao de código */
@@ -101,5 +99,7 @@ void dowrite();
 int lookup(char *s, char *list[], int size);
 void scan();
 void matchstring(char *s);
+void skipWhite();
+void newline();
 
 #endif
