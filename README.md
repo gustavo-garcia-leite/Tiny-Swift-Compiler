@@ -1,9 +1,9 @@
-# CompiladorSimples
+# Compilador Simples
 Projeto final da matéria de compiladores - BCC Sétimo semestre
 
 ## Formalismo de Backus-Naur
 
-Corpo do Compilador
+- Corpo do Compilador
 ```sh
 <program> ::= p <top-level decl> <main> 
 <main> ::= { <block> }
@@ -11,7 +11,7 @@ Corpo do Compilador
 <statement> ::= <if> | <while> | <assignment>
 ```
 
-Expressões
+- Expressões
 ```sh
 <assignment> ::= <ident> '=' <expression>
 <expression> ::= <first term> ( <addop> <term> )*
@@ -22,7 +22,7 @@ Expressões
 <factor> ::= <var> | <number> | ( <expression> )
  ```
 
- Expressões Booleanas
+- Expressões Booleanas
 ```sh
 <bool-expr> ::= <bool-term> ( <orop> <bool-term> )*
 <bool-term> ::= <not-factor> ( <andop> <not-factor> )*
@@ -30,7 +30,7 @@ Expressões
 <relation> ::= <expression> [ <relop> <expression> ]
 ```
 
-Construções de Controle
+- Construções de Controle
 ```sh
 <if> ::= IF <bool-expression> <block> [ ELSE <block> ] ENDIF
 <while> ::= WHILE <bool-expression> <block> ENDWHILE
