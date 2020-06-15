@@ -2,15 +2,14 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include "compilador.h"
+#include "compilador-TinySwift.h"
 
 /* PROGRAMA PRINCIPAL */
 int main()
 {
     init();
-    assignment();
-    if (look != '\n')
-        expected("NewLine");
-
+    prog();
+    if (nextToken != '\n')
+        fatal("Unexpected data after \'.\'");
     return 0;
 }
