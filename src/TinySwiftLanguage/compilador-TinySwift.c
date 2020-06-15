@@ -5,7 +5,7 @@
 #include <string.h>
 #include "compilador-TinySwift.h"
 
-char *commandList[LIST_SZ] = {"IF", "ELSE", "ENDIF", "WHILE", "ENDWHILE", "READ", "WRITE", "VAR", "BEGIN", "END", "PROGRAM"};
+char *commandList[LIST_SZ] = {"IF", "ELSE", "ENDIF", "WHILE", "ENDWHILE", "READ", "WRITE", "VAR", "BEGIN", "END", "CLASS"};
 char *commandCode = "ileweRWvbep"; /* lista de palavras-chave */
 int nsym;                          /* número de entradas na tabela de símbolos */
 
@@ -116,7 +116,7 @@ void emit(char *fmt, ...)
 
 void prog()
 {
-    matchstring("PROGRAM");
+    matchstring("CLASS");
     header();
     declareVariables();
     mainblock();
